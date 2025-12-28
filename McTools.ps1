@@ -1,4 +1,10 @@
-```powershell
+# =======================
+# TOOLS COLLECTOR
+# =======================
+
+# Force TLS 1.2 for downloads
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+
 cls
 Write-Host ""
 Write-Host "=====================================" -ForegroundColor Cyan
@@ -7,91 +13,95 @@ Write-Host "=====================================" -ForegroundColor Cyan
 Write-Host " Made By Java | Ported from Unknown  " -ForegroundColor DarkGray
 Write-Host ""
 
+# -----------------------
 # Admin check
-if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole(
-    [Security.Principal.WindowsBuiltInRole] "Administrator")) {
+# -----------------------
+if (-not ([Security.Principal.WindowsPrincipal] `
+    [Security.Principal.WindowsIdentity]::GetCurrent()
+).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+
     Write-Host "Restarting as administrator..." -ForegroundColor Yellow
-    Start-Process powershell -Verb runAs -ArgumentList ('-ExecutionPolicy Bypass -File "' + $myInvocation.MyCommand.Definition + '"')
-    exit
+    Start-Process powershell -Verb RunAs -ArgumentList `
+        "-ExecutionPolicy Bypass -File `"$($MyInvocation.MyCommand.Definition)`""
+    exit 0
 }
 
-# Folder setup (C:\SS1, SS2, etc.)
+# -----------------------
+# Folder setup (C:\SS1, SS2, ...)
+# -----------------------
 $root = "C:\"
 $name = "SS"
 $i = 1
-while (Test-Path -Path ("$root$name$i")) { $i++ }
+while (Test-Path "$root$name$i") { $i++ }
 $folder = "$root$name$i"
-New-Item -Path $folder -ItemType Directory | Out-Null
-Write-Host "[+] Created folder: $folder" -ForegroundColor Cyan
-Set-Location $folder
 
-# Add Windows Defender exclusion
+New-Item -Path $folder -ItemType Directory -Force | Out-Null
+Set-Location $folder
+Write-Host "[+] Created folder: $folder" -ForegroundColor Cyan
+
+# -----------------------
+# Defender exclusion
+# -----------------------
 function Add-DefenderExclusion {
     Write-Host "[*] Adding Windows Defender exclusion..." -ForegroundColor Cyan
-    $success = $false
     try {
-        if (Get-Command Get-MpPreference -ErrorAction SilentlyContinue) {
-            $existing = (Get-MpPreference).ExclusionPath
-            if ($existing -notcontains $folder) {
+        if (Get-Command Add-MpPreference -ErrorAction SilentlyContinue) {
+            $prefs = (Get-MpPreference).ExclusionPath
+            if ($prefs -notcontains $folder) {
                 Add-MpPreference -ExclusionPath $folder
-                Write-Host "[✓] Added Defender exclusion for $folder" -ForegroundColor Green
+                Write-Host "[✓] Defender exclusion added" -ForegroundColor Green
             }
-            $success = $true
+            return
         }
     } catch {}
-    
-    if (-not $success) {
-        try {
-            $regPath = "HKLM:\SOFTWARE\Microsoft\Windows Defender\Exclusions\Paths"
-            if (Test-Path $regPath) {
-                $existingValue = Get-ItemProperty -Path $regPath -Name $folder -ErrorAction SilentlyContinue
-                if (-not $existingValue) {
-                    New-ItemProperty -Path $regPath -Name $folder -Value 0 -PropertyType DWORD -Force | Out-Null
-                }
-                Write-Host "[✓] Added Defender exclusion via registry" -ForegroundColor Green
-                $success = $true
-            }
-        } catch {}
-    }
 
-    if (-not $success) {
-        Write-Host "[!] Could not add Defender exclusion (maybe 3rd party AV)" -ForegroundColor Yellow
-    }
+    try {
+        $reg = "HKLM:\SOFTWARE\Microsoft\Windows Defender\Exclusions\Paths"
+        if (Test-Path $reg) {
+            New-ItemProperty -Path $reg -Name $folder -Value 0 -PropertyType DWORD -Force | Out-Null
+            Write-Host "[✓] Defender exclusion added (registry)" -ForegroundColor Green
+            return
+        }
+    } catch {}
+
+    Write-Host "[!] Could not add Defender exclusion" -ForegroundColor Yellow
 }
 Add-DefenderExclusion
 
-# Load compression lib
+# -----------------------
+# ZIP support
+# -----------------------
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 
-# Reliable download + unzip
+# -----------------------
+# Download function
+# -----------------------
 function Download-File {
-    param ([string]$url, [string]$name = $null)
-    $fileName = $name
-    if (-not $fileName) { $fileName = Split-Path $url -Leaf }
+    param ([string]$Url)
+
+    $fileName = Split-Path $Url -Leaf
     $dest = Join-Path $folder $fileName
-    $wc = New-Object System.Net.WebClient
-    $wc.Headers.Add('User-Agent','Mozilla/5.0 (Windows NT 10.0; Win64; x64)')
+
     try {
-        $sw = [System.Diagnostics.Stopwatch]::StartNew()
-        $wc.DownloadFile($url, $dest)
-        $sw.Stop()
-        $time = [Math]::Round($sw.Elapsed.TotalSeconds, 2)
-        Write-Host "[✓] Downloaded: $fileName ($time sec)" -ForegroundColor Green
+        Invoke-WebRequest -Uri $Url -OutFile $dest -UseBasicParsing
+        Write-Host "[✓] Downloaded: $fileName" -ForegroundColor Green
 
         if ($fileName.ToLower().EndsWith(".zip")) {
-            $outDir = Join-Path $folder ([System.IO.Path]::GetFileNameWithoutExtension($fileName))
-            if (-not (Test-Path $outDir)) { New-Item -Path $outDir -ItemType Directory | Out-Null }
-            [System.IO.Compression.ZipFile]::ExtractToDirectory($dest, $outDir)
+            $outDir = Join-Path $folder ([IO.Path]::GetFileNameWithoutExtension($fileName))
+            New-Item -ItemType Directory -Path $outDir -Force | Out-Null
+            [System.IO.Compression.ZipFile]::ExtractToDirectory($dest, $outDir, $true)
             Remove-Item $dest -Force
             Write-Host "    Extracted → $outDir" -ForegroundColor DarkCyan
         }
     }
     catch {
-        Write-Host "[✗] Failed: $url" -ForegroundColor Red
+        Write-Host "[✗] Failed: $fileName" -ForegroundColor Red
     }
 }
 
-# File URLs
+# -----------------------
+# URLs
+# -----------------------
 $urls = @(
     'https://github.com/spokwn/BAM-parser/releases/download/v1.2.9/BAMParser.exe',
     'https://github.com/spokwn/Tool/releases/download/v1.1.3/espouken.exe',
@@ -121,15 +131,20 @@ $urls = @(
     'https://github.com/Orbdiff/Fileless/releases/download/v1.1/Fileless.exe'
 )
 
+# -----------------------
 # Download loop
+# -----------------------
 $counter = 0
 $total = $urls.Count
+
 foreach ($url in $urls) {
     $counter++
-    Write-Host "`n[$counter/$total] Starting: $(Split-Path $url -Leaf)" -ForegroundColor Cyan
+    Write-Host "`n[$counter/$total] $(Split-Path $url -Leaf)" -ForegroundColor Cyan
     Download-File $url
 }
 
-# Open folder when done
+# -----------------------
+# Done
+# -----------------------
 Start-Process explorer.exe $folder
-```
+Write-Host "`n[✓] Finished" -ForegroundColor Green
