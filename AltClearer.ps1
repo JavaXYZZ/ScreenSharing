@@ -33,11 +33,11 @@ foreach ($drive in $drives) {
         try {
             if (Select-String -Path $file.FullName -SimpleMatch $find -Quiet) {
                 # Replace the text immediately
-                (Get-Content $file -Raw) -replace [regex]::Escape($find), $replace |
-                    Set-Content $file
+                (Get-Content $file.FullName -Raw) -replace [regex]::Escape($find), $replace |
+                    Set-Content $file.FullName
 
-                # Store the **full path string** explicitly
-                $matches += $file.FullName.ToString()
+                # Store the full path explicitly
+                $matches += $file.FullName
             }
         } catch {}
     }
@@ -52,7 +52,10 @@ if ($matches.Count -eq 0) {
     Write-Host "No files detected containing the word." -ForegroundColor Red
 } else {
     Write-Host "Files where replacements were made:" -ForegroundColor Green
-    $matches | ForEach-Object { Write-Host $_ -ForegroundColor White }
+    foreach ($match in $matches) {
+        Write-Host $match -ForegroundColor White
+    }
 }
 
 Read-Host "`nPress Enter to close Alt Clearer by JAVA"
+
