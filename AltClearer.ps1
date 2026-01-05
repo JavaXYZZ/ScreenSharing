@@ -1,10 +1,10 @@
 # ==============================
-# ALT CLEARER by JAVA – Full Automated Version
+# ALT CLEARER by JAVA – Auto Replace (Only show replaced files)
 # ==============================
 
 $ErrorActionPreference = "SilentlyContinue"
 
-# --- ASCII banner & colors
+# --- Banner
 $headerLines = @(
 " █████╗ ██╗     ████████╗     ██████╗██╗     ███████╗ █████╗ ██████╗ ███████╗██████╗ ",
 "██╔══██╗██║     ╚══██╔══╝    ██╔════╝██║     ██╔════╝██╔══██╗██╔══██╗██╔════╝██╔══██╗",
@@ -14,35 +14,29 @@ $headerLines = @(
 "╚═╝  ╚═╝╚══════╝   ╚═╝        ╚═════╝╚══════╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝"
 )
 
-# Tropical colors
 $colors = @('Cyan','Green','Magenta','Yellow','DarkCyan','White')
 
-# --- Show header instantly, tropical theme
+# Instant banner display
 Clear-Host
 foreach ($line in $headerLines) {
     Write-Host $line -ForegroundColor (Get-Random -InputObject $colors)
 }
 
-Write-Host "`nAutomated Find & Replace – Alt Clearer by JAVA" -ForegroundColor Cyan
-Write-Host ""
+Write-Host "`nAutomated Find & Replace – Alt Clearer by JAVA`n" -ForegroundColor Cyan
 
-# --- Ask user for input (no forced exit)
+# --- Input
 $find = Read-Host "Enter the word/text to FIND"
 $replace = Read-Host "Enter the word/text to REPLACE it with"
 
-Write-Host "`nScanning entire PC... This may take a while." -ForegroundColor Yellow
-Write-Host ""
+Write-Host "`nScanning entire PC..." -ForegroundColor Yellow
 
-# --- Prepare storage
+# --- Storage
 $matches = @()
-$totalFiles = 0
-$scannedFiles = 0
 
 # --- Collect all drives
 $drives = Get-PSDrive -PSProvider FileSystem
 
-# --- Gather files first
-Write-Host "Gathering files to scan..." -ForegroundColor Green
+# --- Gather files
 $allFiles = @()
 foreach ($drive in $drives) {
     $allFiles += Get-ChildItem $drive.Root -Recurse -File -ErrorAction SilentlyContinue |
@@ -52,13 +46,9 @@ foreach ($drive in $drives) {
             $_.FullName -notmatch 'Windows|Program Files|ProgramData'
         }
 }
-$totalFiles = $allFiles.Count
-Write-Host "Total files to scan: $totalFiles" -ForegroundColor Green
-Write-Host ""
 
 # --- Scan & replace automatically
 foreach ($file in $allFiles) {
-    $scannedFiles++
     try {
         if (Select-String -Path $file.FullName -SimpleMatch $find -Quiet) {
             $matches += $file.FullName
@@ -66,17 +56,13 @@ foreach ($file in $allFiles) {
                 Set-Content $file.FullName
         }
     } catch {}
-    # --- Display scanning progress at bottom
-    Write-Host ("Scanning: {0}/{1}" -f $scannedFiles, $totalFiles) -NoNewline -ForegroundColor DarkGray
-    Write-Host "`r"
 }
 
-# --- Done scanning & replacing
+# --- Done
 Write-Host "`n------------------------------------------------------------------------------------------------------------------------"
 Write-Host "                              SCAN COMPLETE!" -ForegroundColor Green
 Write-Host "------------------------------------------------------------------------------------------------------------------------`n"
 
-# --- Only show files that were replaced (full paths)
 if ($matches.Count -eq 0) {
     Write-Host "No matches found." -ForegroundColor Red
 } else {
