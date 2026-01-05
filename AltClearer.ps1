@@ -1,5 +1,5 @@
-# Alt Clearer by JAVA
-# PowerShell script to find & replace text across PC, only reports files containing the word, no backups
+# Alt Clearer by JAVA - Auto Replace
+# Automatically replaces text across your PC and shows only files where replacements were made
 
 $ErrorActionPreference = "SilentlyContinue"
 
@@ -46,38 +46,18 @@ $totalFiles = $allFiles.Count
 Write-Host "Total files to scan: $totalFiles" -ForegroundColor Green
 Write-Host ""
 
-# --- Scan files and find matches
+# --- Scan files, replace text, and store matches
 foreach ($file in $allFiles) {
-    $scannedFiles++
     try {
-        if (Select-String -Path $file.FullName -SimpleMatch $find -Quiet) {
+        $content = Get-Content $file.FullName -Raw
+        if ($content -match [regex]::Escape($find)) {
             $matches += $file.FullName
-            Write-Host ("FOUND in: {0}" -f $file.FullName) -ForegroundColor Cyan
+            # Replace text directly
+            $newContent = $content -replace [regex]::Escape($find), $replace
+            Set-Content $file.FullName $newContent
+            Write-Host ("REPLACED in: {0}" -f $file.FullName) -ForegroundColor Cyan
         }
     } catch {}
-}
-
-# --- Done scanning
-Write-Host "`n"
-if ($matches.Count -eq 0) {
-    Write-Host "No matches found." -ForegroundColor Red
-    Read-Host "Press Enter to close"
-    exit
-}
-
-# --- Ask confirmation to replace
-$confirm = Read-Host "`nReplace text in ALL these files? (Y/N)"
-if ($confirm -ne "Y") {
-    Write-Host "Cancelled." -ForegroundColor Yellow
-    Read-Host "Press Enter to close"
-    exit
-}
-
-# --- Perform replacement (NO BACKUPS)
-Write-Host "`nReplacing..." -ForegroundColor Yellow
-foreach ($file in $matches) {
-    (Get-Content $file -Raw) -replace [regex]::Escape($find), $replace |
-        Set-Content $file
 }
 
 # --- Done
@@ -85,7 +65,11 @@ Write-Host "`n===============================" -ForegroundColor Cyan
 Write-Host "           DONE!               " -ForegroundColor Cyan
 Write-Host "===============================" -ForegroundColor Cyan
 
-Write-Host "`nReplacements made in the following files:" -ForegroundColor Green
-$matches | ForEach-Object { Write-Host $_ -ForegroundColor White }
+if ($matches.Count -gt 0) {
+    Write-Host "`nReplacements made in the following files:" -ForegroundColor Green
+    $matches | ForEach-Object { Write-Host $_ -ForegroundColor White }
+} else {
+    Write-Host "`nNo matches found." -ForegroundColor Red
+}
 
 Read-Host "`nPress Enter to close Alt Clearer by JAVA"
