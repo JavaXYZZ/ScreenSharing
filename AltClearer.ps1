@@ -20,10 +20,9 @@ function ScanAndReplace($filePath) {
             $before = if ($index -gt 20) { $content.Substring($index - 20, 20) } else { $content.Substring(0, $index) }
             $after  = if (($index + $find.Length + 20) -lt $content.Length) { $content.Substring($index + $find.Length, 20) } else { "" }
 
-            Write-Host "File: $filePath" -ForegroundColor Cyan
+            Write-Host "`nFile: $filePath" -ForegroundColor Cyan
             Write-Host "Replaced: '$find' => '$replace'" -ForegroundColor Green
             Write-Host "Context: ...$before[$find]$after..." -ForegroundColor Yellow
-            Write-Host ""
 
             Set-Content -Path $filePath -Value $newContent
             return $true
@@ -47,12 +46,12 @@ $matches = @()
 
 for ($i = 0; $i -lt $totalFiles; $i++) {
     $file = $allFiles[$i]
+
     if (ScanAndReplace $file.FullName) { $matches += $file.FullName }
 
-    # Show progress
+    # --- LIVE PROGRESS ---
     $percent = [math]::Round((($i + 1) / $totalFiles) * 100, 1)
-    Write-Host ("Progress: {0}/{1} files scanned ({2}%)" -f ($i + 1), $totalFiles, $percent) -NoNewline
-    Write-Host "`r"  # overwrite same line
+    Write-Progress -Activity "Scanning Files" -Status "$($i+1)/$totalFiles files ($percent%)" -PercentComplete $percent
 }
 
 Write-Host "`nFirst scan complete"
@@ -74,10 +73,9 @@ for ($i = 0; $i -lt $totalFiles; $i++) {
         }
     } catch {}
 
-    # Show second-pass progress
+    # --- LIVE PROGRESS SECOND PASS ---
     $percent = [math]::Round((($i + 1) / $totalFiles) * 100, 1)
-    Write-Host ("Second pass progress: {0}/{1} files scanned ({2}%)" -f ($i + 1), $totalFiles, $percent) -NoNewline
-    Write-Host "`r"
+    Write-Progress -Activity "Second Pass Check" -Status "$($i+1)/$totalFiles files ($percent%)" -PercentComplete $percent
 }
 
 if ($missed.Count -gt 0) {
