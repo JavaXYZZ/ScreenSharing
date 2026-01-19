@@ -42,9 +42,17 @@ foreach ($drive in Get-PSDrive -PSProvider FileSystem) {
                  }
 }
 
+$totalFiles = $allFiles.Count
 $matches = @()
-foreach ($file in $allFiles) {
+
+for ($i = 0; $i -lt $totalFiles; $i++) {
+    $file = $allFiles[$i]
     if (ScanAndReplace $file.FullName) { $matches += $file.FullName }
+
+    # Show progress
+    $percent = [math]::Round((($i + 1) / $totalFiles) * 100, 1)
+    Write-Host ("Progress: {0}/{1} files scanned ({2}%)" -f ($i + 1), $totalFiles, $percent) -NoNewline
+    Write-Host "`r"  # overwrite same line
 }
 
 Write-Host "`nFirst scan complete"
@@ -56,7 +64,8 @@ if ($matches.Count -gt 0) {
 }
 
 $missed = @()
-foreach ($file in $allFiles) {
+for ($i = 0; $i -lt $totalFiles; $i++) {
+    $file = $allFiles[$i]
     try {
         $content = Get-Content $file.FullName -Raw
         if ($content.Contains($find)) {
@@ -64,6 +73,11 @@ foreach ($file in $allFiles) {
             $missed += $file.FullName
         }
     } catch {}
+
+    # Show second-pass progress
+    $percent = [math]::Round((($i + 1) / $totalFiles) * 100, 1)
+    Write-Host ("Second pass progress: {0}/{1} files scanned ({2}%)" -f ($i + 1), $totalFiles, $percent) -NoNewline
+    Write-Host "`r"
 }
 
 if ($missed.Count -gt 0) {
