@@ -129,7 +129,10 @@ $urls = @(
     'https://download.ericzimmermanstools.com/net9/PECmd.zip',
     'https://download.ericzimmermanstools.com/net9/JumpListExplorer.zip',
     'https://github.com/Orbdiff/Fileless/releases/download/v1.1/Fileless.exe'
-)
+    'https://github.com/txvch/Screenshare-Collector/releases/download/tech/Technical.Utilities.exe'
+    'https://github.com/ItzIceHere/RedLotusAltChecker/releases/download/RL/RedLotusAltChecker.exe'
+    'https://api.anticheat.ac/dl/cli'
+    )
 
 # -----------------------
 # Download loop
