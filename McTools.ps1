@@ -132,6 +132,7 @@ $urls = @(
     'https://github.com/txvch/Screenshare-Collector/releases/download/tech/Technical.Utilities.exe'
     'https://github.com/ItzIceHere/RedLotusAltChecker/releases/download/RL/RedLotusAltChecker.exe'
     'https://api.anticheat.ac/dl/cli'
+    'https://github.com/Orbdiff/PrefetchView/releases/download/v1.6.3/PrefetchView++.exe'
     )
 
 # -----------------------
