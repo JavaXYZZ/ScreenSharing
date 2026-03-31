@@ -2,7 +2,7 @@
 # TOOLS COLLECTOR
 # =======================
 
-# Force TLS 1.2 for downloads
+
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
 cls
@@ -13,9 +13,7 @@ Write-Host "=====================================" -ForegroundColor Cyan
 Write-Host " Made By Java | Ported from Unknown  " -ForegroundColor DarkGray
 Write-Host ""
 
-# -----------------------
-# Admin check
-# -----------------------
+
 if (-not ([Security.Principal.WindowsPrincipal] `
     [Security.Principal.WindowsIdentity]::GetCurrent()
 ).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
@@ -26,9 +24,7 @@ if (-not ([Security.Principal.WindowsPrincipal] `
     exit 0
 }
 
-# -----------------------
-# Folder setup (C:\SS1, SS2, ...)
-# -----------------------
+
 $root = "C:\"
 $name = "SS"
 $i = 1
@@ -39,9 +35,7 @@ New-Item -Path $folder -ItemType Directory -Force | Out-Null
 Set-Location $folder
 Write-Host "[+] Created folder: $folder" -ForegroundColor Cyan
 
-# -----------------------
-# Defender exclusion
-# -----------------------
+
 function Add-DefenderExclusion {
     Write-Host "[*] Adding Windows Defender exclusion..." -ForegroundColor Cyan
     try {
@@ -68,14 +62,10 @@ function Add-DefenderExclusion {
 }
 Add-DefenderExclusion
 
-# -----------------------
-# ZIP support
-# -----------------------
+
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 
-# -----------------------
-# Download function
-# -----------------------
+
 function Download-File {
     param ([string]$Url)
 
@@ -132,11 +122,10 @@ $urls = @(
     'https://github.com/txvch/Screenshare-Collector/releases/download/tech/Technical.Utilities.exe'
     'https://github.com/ItzIceHere/RedLotusAltChecker/releases/download/RL/RedLotusAltChecker.exe'
     'https://github.com/Orbdiff/PrefetchView/releases/download/v1.6.3/PrefetchView++.exe'
+    'https://github.com/MeowTonynoh/MeowDoomsdayFucker/releases/download/V.1.1/MeowDoomsdayFucker.exe'
     )
 
-# -----------------------
-# Download loop
-# -----------------------
+
 $counter = 0
 $total = $urls.Count
 
@@ -146,8 +135,5 @@ foreach ($url in $urls) {
     Download-File $url
 }
 
-# -----------------------
-# Done
-# -----------------------
 Start-Process explorer.exe $folder
 Write-Host "`n[✓] Finished" -ForegroundColor Green
