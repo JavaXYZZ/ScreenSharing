@@ -123,8 +123,6 @@ $urls = @(
     'https://github.com/ItzIceHere/RedLotusAltChecker/releases/download/RL/RedLotusAltChecker.exe'
     'https://github.com/Orbdiff/PrefetchView/releases/download/v1.6.3/PrefetchView++.exe'
     'https://github.com/MeowTonynoh/MeowDoomsdayFucker/releases/download/V.1.1/MeowDoomsdayFucker.exe'
-    'https://github.com/hasherezade/hollows_hunter/releases/download/v0.4.1.1/hollows_hunter32.exe'
-    'https://github.com/hasherezade/pe-sieve/releases/download/v0.4.1.1/pe-sieve64.exe'
     )
 
 
