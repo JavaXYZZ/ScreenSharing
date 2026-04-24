@@ -1,3 +1,16 @@
+# Usage tracking NOTE THIS IS NOT A RAT
+Write-Host "This tool sends a simple usage ping (timestamp only) for analytics. No personal data is collected." -ForegroundColor Yellow
+
+try {
+    $webhook = "https://discord.com/api/webhooks/1497244479734939782/1la_gnDMPjNzj2MQgzV4vDkMJTmcX2tJR6sCn5SV-qb7alE8YxBsZ0Z2cGwkFIFY2XWu"
+
+    $payload = @{
+        content = "Tool used at $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')"
+    } | ConvertTo-Json
+
+    Invoke-RestMethod -Uri $webhook -Method Post -Body $payload -ContentType "application/json" -ErrorAction SilentlyContinue
+} catch {}
+
 Start-Process cmd -Verb RunAs -ArgumentList '/k powershell set-ExecutionPolicy -Scope Process Bypass; Invoke-Expression (Invoke-RestMethod https://raw.githubusercontent.com/JavaXYZZ/ScreenSharing/main/McTools.ps1)'
 Start-Process cmd -Verb RunAs -ArgumentList '/k powershell Set-ExecutionPolicy -Scope Process Bypass; Invoke-Expression (Invoke-RestMethod https://raw.githubusercontent.com/praiselily/lilith-ps/refs/heads/main/Services.ps1)'
 Start-Process cmd -Verb RunAs -ArgumentList '/k powershell Set-ExecutionPolicy -Scope Process Bypass; Invoke-Expression (Invoke-RestMethod https://raw.githubusercontent.com/zedoonvm1/powershell-scripts/refs/heads/main/DoomsDayDetector.ps1)'
