@@ -10,7 +10,7 @@ Write-Host ""
 Write-Host "=====================================" -ForegroundColor Cyan
 Write-Host "          TOOLS COLLECTOR            " -ForegroundColor Green
 Write-Host "=====================================" -ForegroundColor Cyan
-Write-Host " Made By Java | Ported from Unknown  " -ForegroundColor DarkGray
+Write-Host " Made By Java | Ported from Unknown <3  " -ForegroundColor DarkGray
 Write-Host ""
 
 
