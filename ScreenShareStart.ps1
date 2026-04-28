@@ -17,7 +17,7 @@ Start-Process cmd -Verb RunAs -ArgumentList '/k powershell Set-ExecutionPolicy -
 Start-Process cmd -Verb RunAs -ArgumentList '/k powershell Set-ExecutionPolicy -Scope Process Bypass; Invoke-Expression (Invoke-RestMethod https://raw.githubusercontent.com/Enr1c0o/Powershell-Scripts/refs/heads/main/Alt-Detector.ps1)'
 Start-Process cmd -Verb RunAs -ArgumentList '/k powershell Set-ExecutionPolicy -Scope Process Bypass; Invoke-Expression (Invoke-RestMethod https://raw.githubusercontent.com/HadronCollision/PowershellScripts/refs/heads/main/HabibiModAnalyzer.ps1)'
 Start-Process cmd -Verb RunAs -ArgumentList '/k powershell Set-ExecutionPolicy -Scope Process Bypass; Invoke-Expression (Invoke-RestMethod https://raw.githubusercontent.com/praiselily/lilith-ps/refs/heads/main/CommonDirectories.ps1)'
-Start-Process cmd -Verb RunAs -ArgumentList '/k powershell set-ExecutionPolicy -Scope Process Bypass; Invoke-Expression (Invoke-RestMethod https://raw.githubusercontent.com/Ferman9/DIFR-tools/main/dillfinder.ps1)'
+Start-Process cmd -Verb RunAs -ArgumentList '/k powershell set-ExecutionPolicy -Scope Process Bypass; Invoke-Expression (Invoke-RestMethod https://raw.githubusercontent.com/Ferman9/DIFR-tools/main/dillfindernew.ps1)'
 
 Start-Process explorer.exe $env:TEMP
 Start-Process explorer.exe 'shell:recent'
