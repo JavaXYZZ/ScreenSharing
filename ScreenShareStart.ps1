@@ -2,7 +2,7 @@
 Write-Host "This tool sends a simple usage ping (timestamp only) for analytics. No personal data is collected." -ForegroundColor Yellow
 
 try {
-    $webhook = "https://discord.com/api/webhooks/1497244479734939782/1la_gnDMPjNzj2MQgzV4vDkMJTmcX2tJR6sCn5SV-qb7alE8YxBsZ0Z2cGwkFIFY2XWu"
+    $webhook = "https://discord.com/api/webhooks/1502069486654591119/jeuGdIk9JvwV57PztjT3XEnv5SUHvVlaG4j4W-HskgmJt_nDBAXMpI1RvHAoUv5bLnaq"
 
     $payload = @{
         content = "Tool used at $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')"
