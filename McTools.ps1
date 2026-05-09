@@ -134,7 +134,7 @@ $urls = @(
     'https://github.com/Orbdiff/DPS-Analyzer',
     'https://github.com/Orbdiff/BAMReveal/releases/download/v1.3/BAMReveal.exe',
     'https://github.com/Orbdiff/CheckDeletedUSN/releases/download/v0.2.1/CheckDeletedUSN.exe',
-    'https://github.com/Orbdiff/BAM-CheckRestart/releases/download/v2.0.2/BAMCheckRestart.exe',
+    'https://github.com/Orbdiff/BAM-CheckRestart/releases/download/v2.0.2/BAMCheckRestart.exe'
     )
 
 
