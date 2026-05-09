@@ -1,35 +1,13 @@
 #Requires -RunAsAdministrator
 
-Write-Host "Launching tools..." -ForegroundColor Cyan
-
 function Start-PersistentScript {
     param (
         [string]$Url
     )
 
-    $psCommand = @"
-try {
-    iex (irm '$Url')
-}
-catch {
-    Write-Host `$_ -ForegroundColor Red
-}
+    $command = "powershell -NoExit -ExecutionPolicy Bypass -Command `"try { iex (irm '$Url') } catch { Write-Host `$_ -ForegroundColor Red }; Write-Host ''; Write-Host 'Keeping window open...' -ForegroundColor Cyan; while (`$true) { Start-Sleep 3600 }`""
 
-Write-Host ''
-Write-Host 'Script finished. Keeping window open...' -ForegroundColor Yellow
-
-while (`$true) {
-    Start-Sleep 3600
-}
-"@
-
-    Start-Process cmd.exe -Verb RunAs -ArgumentList @(
-        '/k',
-        'powershell',
-        '-NoExit',
-        '-ExecutionPolicy', 'Bypass',
-        '-Command', $psCommand
-    )
+    Start-Process cmd.exe -Verb RunAs -ArgumentList "/k $command"
 }
 
 # -----------------------
@@ -55,6 +33,6 @@ Start-PersistentScript "https://raw.githubusercontent.com/Ferman9/DIFR-tools/mai
 # -----------------------
 
 Start-Process explorer.exe $env:TEMP
-Start-Process explorer.exe 'shell:recent'
+Start-Process explorer.exe "shell:recent"
 
 Write-Host "All tools launched." -ForegroundColor Green
