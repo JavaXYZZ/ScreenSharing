@@ -1,58 +1,35 @@
 #Requires -RunAsAdministrator
 
-# -----------------------
-# Usage tracking
-# NOTE THIS IS NOT A RAT
-# -----------------------
-
-Write-Host "This tool sends a simple usage ping (timestamp only) for analytics. No personal data is collected." -ForegroundColor Yellow
-
-try {
-    $webhook = "Fuck Tech and Harley / This tool no longer does it :/"
-
-    $payload = @{
-        content = "Tool used at $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')"
-    } | ConvertTo-Json
-
-    Invoke-RestMethod `
-        -Uri $webhook `
-        -Method Post `
-        -Body $payload `
-        -ContentType "application/json" `
-        -ErrorAction SilentlyContinue
-}
-catch {
-    Write-Host "Webhook failed." -ForegroundColor DarkGray
-}
-
-# -----------------------
-# Function
-# -----------------------
+Write-Host "Launching tools..." -ForegroundColor Cyan
 
 function Start-PersistentScript {
     param (
         [string]$Url
     )
 
-    $cmd = @"
-powershell -NoExit -ExecutionPolicy Bypass -Command "
+    $psCommand = @"
 try {
     iex (irm '$Url')
 }
 catch {
-    Write-Host \$_ -ForegroundColor Red
+    Write-Host `$_ -ForegroundColor Red
 }
 
 Write-Host ''
-Write-Host 'Script finished. Window will stay open forever.' -ForegroundColor Cyan
+Write-Host 'Script finished. Keeping window open...' -ForegroundColor Yellow
 
 while (`$true) {
     Start-Sleep 3600
 }
-"
 "@
 
-    Start-Process cmd -Verb RunAs -ArgumentList "/k $cmd"
+    Start-Process cmd.exe -Verb RunAs -ArgumentList @(
+        '/k',
+        'powershell',
+        '-NoExit',
+        '-ExecutionPolicy', 'Bypass',
+        '-Command', $psCommand
+    )
 }
 
 # -----------------------
@@ -78,7 +55,6 @@ Start-PersistentScript "https://raw.githubusercontent.com/Ferman9/DIFR-tools/mai
 # -----------------------
 
 Start-Process explorer.exe $env:TEMP
-Start-Process explorer.exe "shell:recent"
+Start-Process explorer.exe 'shell:recent'
 
-Write-Host ""
 Write-Host "All tools launched." -ForegroundColor Green
