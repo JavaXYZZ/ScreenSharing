@@ -35,4 +35,4 @@ Start-PersistentScript "https://raw.githubusercontent.com/Ferman9/DIFR-tools/mai
 Start-Process explorer.exe $env:TEMP
 Start-Process explorer.exe "shell:recent"
 
-Write-Host "All tools launched." -ForegroundColor Green
+Write-Host "All tools launched yay!!!." -ForegroundColor Green
