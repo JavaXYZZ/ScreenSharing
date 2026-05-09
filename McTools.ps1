@@ -123,6 +123,13 @@ $urls = @(
     'https://github.com/ItzIceHere/RedLotusAltChecker/releases/download/RL/RedLotusAltChecker.exe'
     'https://github.com/Orbdiff/PrefetchView/releases/download/v1.6.3/PrefetchView++.exe'
     'https://github.com/MeowTonynoh/MeowDoomsdayFucker/releases/download/V.1.1/MeowDoomsdayFucker.exe'
+    'https://dl.echo.ac/tool/journal'
+    'https://github.com/kacos2000/Win10LiveInfo/releases/download/v.1.0.23.0/WinLiveInfo.exe'
+    'https://www.nirsoft.net/utils/regscanner.html'
+    'https://github.com/moaistory/WinSearchDBAnalyzer/releases/download/1.0.0.6/WinSearchDBAnalyzer.exe'
+    'https://www.nirsoft.net/utils/appaudioconfig-x64.zip'
+    'https://github.com/zodiacon/AllTools/raw/master/NtfsStreams.zip'
+    'https://api.anticheat.ac/dl/cli'
     )
 
 
